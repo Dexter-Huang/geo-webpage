@@ -1,0 +1,44 @@
+.draft-bar {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: calc(100vw - 20px);
+  padding: 6px;
+  border-radius: 16px;
+  background: #0b1220;
+  color: #f4f9ff;
+  box-shadow: 0 12px 40px rgba(15, 55, 95, 0.28);
+  font-family: "Segoe UI Variable Text", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+  transform: translateX(-50%);
+}
+.draft-bar a,
+.draft-bar button,
+.draft-bar .tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  border-radius: 10px;
+}
+.draft-bar .tag { padding: 0 10px; color: #9eb0c8; }
+.draft-bar a,
+.draft-bar button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.draft-bar a[aria-current="page"] { background: #f4f9ff; color: #0b1220; }
+.draft-bar button { background: #f5b400; color: #1a1404; font-weight: 700; }
+.draft-bar a:focus-visible,
+.draft-bar button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

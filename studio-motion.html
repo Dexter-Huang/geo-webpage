@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>德沛GEO · 一站式生成式搜索优化平台</title>
+<meta name="description" content="德沛GEO 贯通 AI 可见度诊断、企业知识库、内容创作、多渠道分发与品牌监测，帮助企业围绕真实用户问题持续优化品牌在 AI 搜索中的表现" />
+<link rel="stylesheet" href="base.css" />
+<style>
+body {
+  background-color: #f3f6fb;
+  background-image:
+    radial-gradient(ellipse 46% 30% at 100% -8%, rgba(10, 111, 156, 0.16), transparent 62%),
+    radial-gradient(ellipse 38% 26% at 0% -6%, rgba(12, 124, 114, 0.14), transparent 60%),
+    linear-gradient(180deg, #f7fbff 0%, #eef3f8 48%, #f6f8fb 100%);
+}
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+.wrap { width: min(1160px, calc(100% - 32px)); margin: 0 auto; }
+.top {
+  position: sticky; top: 12px; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 12px; padding: 8px 8px 8px 14px;
+  border: 1px solid #e3ebf3; border-radius: 18px; background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 55, 95, 0.08);
+}
+.brand { display: flex; align-items: center; gap: 10px; min-height: 44px; text-decoration: none; }
+.brand-name { display: flex; flex-direction: column; line-height: 1.2; }
+.brand-name strong { font-size: 15px; }
+.brand-name span { color: #5b6b82; font-size: 12px; font-weight: 600; }
+.links { display: flex; flex-wrap: wrap; gap: 2px; }
+.links a {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px;
+  border-radius: 12px; color: #3d5168; font-size: 14px; font-weight: 650; text-decoration: none;
+}
+.links a:hover { color: #063f3c; background: #e7f6f3; }
+.btn-primary { background: #0c7c72; color: #fff; box-shadow: 0 10px 20px rgba(12, 124, 114, 0.28); }
+.btn-primary:hover { background: #0a9488; }
+.btn-ghost {
+  background: #fff; color: #07211f; border-color: #e3ebf3;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.btn-ghost:hover { background: #f3fbf9; border-color: #b7ddd6; }
+.kicker {
+  display: inline-flex; align-items: center; min-height: 32px; margin: 0 0 16px; padding: 0 12px;
+  border-radius: 999px; background: #e7f6f3; color: #0c7c72;
+  -webkit-text-fill-color: #0c7c72; background-clip: border-box; -webkit-background-clip: border-box;
+  letter-spacing: 0.08em; text-transform: none; font-size: 12px; font-weight: 700;
+}
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 1.05fr); gap: 36px; align-items: center; padding: 56px 0 8px; }
+.display { font-size: clamp(2.05rem, 3.6vw, 3.55rem); letter-spacing: -0.045em; color: #07211f; }
+.display span { display: block; }
+.display span + span { color: #0c7c72; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.scene {
+  position: relative; overflow: hidden; padding: 16px;
+  border-radius: 32px; border: 1px solid #d5e4f2; background-color: #e7f3fb;
+  background-image: radial-gradient(#c5d6e4 1.15px, transparent 1.15px);
+  background-size: 16px 16px;
+  box-shadow: 0 22px 48px rgba(15, 55, 95, 0.12);
+}
+.orb { position: absolute; border-radius: 50%; }
+.orb-a { width: 180px; height: 180px; right: -50px; top: -60px; background: #d5ebf8; }
+.orb-b { width: 150px; height: 150px; left: -48px; bottom: -56px; background: #ffe4d4; }
+.scene-main, .ptiles { position: relative; z-index: 1; }
+.scene-main { display: grid; grid-template-columns: 1fr; gap: 12px; align-items: stretch; }
+.qcard, .acard {
+  border-radius: 16px; background: #fff; border: 1px solid #e3ebf3;
+  box-shadow: 0 10px 24px rgba(15, 55, 95, 0.06);
+}
+.qcard { display: flex; flex-direction: row; align-items: center; gap: 14px; padding: 16px 18px; }
+.qmark {
+  display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px;
+  background: #073f3c; color: #fff; font-family: var(--font-display), sans-serif;
+  font-size: 28px; font-weight: 700;
+}
+.ask { margin: 0; color: #07211f; font-size: 1.2rem; font-weight: 750; line-height: 1.35; letter-spacing: -0.03em; }
+.caret {
+  display: inline-block; width: 2px; height: 0.9em; margin-left: 2px; vertical-align: -1px;
+  border-radius: 2px; background: #0c7c72; animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.acard { padding: 14px; }
+.adots { display: flex; gap: 6px; }
+.adots i, .winbar i { width: 8px; height: 8px; border-radius: 50%; background: #d5e4f2; }
+.adots i:first-child, .winbar i:first-child { background: #e36a32; }
+.adots i:nth-child(2), .winbar i:nth-child(2) { background: #0a6f9c; }
+.adots i:nth-child(3), .winbar i:nth-child(3) { background: #0c7c72; }
+.arow { height: 10px; margin-top: 10px; border-radius: 99px; background: #e7eef5; }
+.arow.short { width: 62%; }
+.hit {
+  display: flex; align-items: center; gap: 8px; height: auto; margin-top: 12px; padding: 8px 10px;
+  border-radius: 12px; background: #d9f3ee;
+}
+.hit strong { color: #073f3c; font-size: 14px; }
+.hit i { display: block; width: 36%; height: 8px; border-radius: 99px; background: #0c7c72; }
+.gem { width: 14px; height: 14px; border-radius: 4px; background: #0c7c72; flex: 0 0 auto; }
+.trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.trio span {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  min-height: 68px; border-radius: 12px; background: #f4f8fb; border: 1px solid #e3ebf3;
+  color: #24364c; font-size: 12px; font-weight: 750;
+}
+.mini-pips, .mini-stairs, .mini-arc { display: block; }
+.mini-pips { width: 34px; height: 8px; border-radius: 99px; background: linear-gradient(90deg, #0c7c72 0 58%, #d7e4ef 58%); }
+.mini-stairs {
+  width: 34px; height: 16px;
+  background:
+    linear-gradient(#9fd8d0, #9fd8d0) left bottom / 8px 7px no-repeat,
+    linear-gradient(#0a6f9c, #0a6f9c) center bottom / 8px 12px no-repeat,
+    linear-gradient(#d7e4ef, #d7e4ef) right bottom / 8px 16px no-repeat;
+}
+.mini-arc { width: 22px; height: 12px; border: 3px solid #e36a32; border-bottom: 0; border-radius: 22px 22px 0 0; }
+.ptiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.ptiles span, .minis i {
+  display: grid; place-items: center; min-height: 42px; padding: 0 6px;
+  border-radius: 12px; background: #fff; border: 1px solid #e3ebf3; border-top: 3px solid #0c7c72;
+  color: #07211f; font-size: 13px; font-weight: 750; font-style: normal;
+}
+.ptiles span:nth-child(2), .minis i:nth-child(2) { border-top-color: #0a6f9c; }
+.ptiles span:nth-child(3), .minis i:nth-child(3) { border-top-color: #073f3c; }
+.ptiles span:nth-child(4), .minis i:nth-child(4) { border-top-color: #1d4f91; }
+.ptiles span:nth-child(5), .minis i:nth-child(5) { border-top-color: #e36a32; }
+.ptiles span:nth-child(6), .minis i:nth-child(6) { border-top-color: #0f766e; }
+.block { padding: 72px 0 8px; }
+.block, .band { scroll-margin-top: 92px; }
+.head { max-width: 40rem; margin-bottom: 18px; }
+.head h2 { font-size: clamp(1.8rem, 3vw, 2.45rem); color: #07211f; }
+.head p, .note, .sub { color: #3d5168; }
+.head p, .note { margin-top: 8px; font-size: 14px; }
+.sub { margin-top: 12px; font-size: 1.12rem; line-height: 1.6; }
+.benefits { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.piccard, .poster, .faq-item, .window, .os {
+  background: #fff; border: 1px solid #e3ebf3;
+}
+.piccard {
+  border-radius: 22px; padding: 10px 10px 16px; text-align: center;
+  box-shadow: 0 10px 24px rgba(15, 55, 95, 0.05);
+  transition-property: transform, box-shadow;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+.frame { display: grid; place-items: center; height: 172px; border-radius: 12px; }
+.frame svg { width: min(196px, 100%); height: auto; }
+.f-mint { background: #e7f6f3; }
+.f-blue { background: #e7f3fb; }
+.f-sand { background: #fff1e8; }
+.f-deep { background: #e5f4ef; }
+.piccard h3 { margin-top: 12px; font-size: 1.12rem; color: #07211f; }
+.tour {
+  display: grid; grid-template-columns: 232px minmax(0, 1fr); gap: 14px; padding: 14px;
+  border-radius: 28px; background: #fff; border: 1px solid #e3ebf3;
+  box-shadow: 0 16px 36px rgba(15, 55, 95, 0.06);
+}
+.tour-nav { display: flex; flex-direction: column; gap: 8px; }
+.tour-nav button {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 8px 12px;
+  border: 1px solid #e3ebf3; border-radius: 14px; background: #fff; color: #07211f;
+  text-align: left; cursor: pointer; font-weight: 750; white-space: nowrap;
+  transition-property: background-color, color, border-color;
+  transition-duration: 160ms;
+}
+.glyph {
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px;
+  background: #e7f6f3; color: #073f3c; flex: 0 0 auto;
+}
+.glyph svg { display: block; width: 20px; height: 20px; }
+.tour-nav button[aria-selected="true"] { background: #073f3c; border-color: #073f3c; color: #fff; }
+.tour-nav button[aria-selected="true"] .glyph { background: #0f6f62; color: #fff; }
+.slide { display: none; }
+.slide.is-on { display: block; }
+.art {
+  min-height: 360px; padding: 22px; border-radius: 14px; border: 1px solid #e3ebf3;
+  background: #f4f8fb; display: flex; align-items: center; justify-content: center; gap: 16px;
+  overflow: hidden;
+}
+.see { background: #f3f8fb; }
+.lib { background: #f4faf8; }
+.write { background: #fff8f4; }
+.send { background: #f4f8fb; }
+.watch { background: #f3f7f6; flex-direction: column; gap: 14px; }
+.askbox, .src, .doc, .sheetlet, .meter, .pcell, .feed {
+  background: #fff; border: 1px solid #e3ebf3; border-radius: 18px;
+}
+.askbox, .src, .doc { width: 230px; min-height: 250px; padding: 22px; }
+.askbox .qmark { width: 44px; height: 44px; border-radius: 14px; font-size: 22px; }
+.askbox i, .line { display: block; height: 10px; margin-top: 12px; border-radius: 99px; background: #d7e4ef; }
+.askbox i:first-of-type, .line.on { width: 78%; background: #0c7c72; }
+.askbox i:nth-of-type(2), .line.mid { width: 100%; }
+.askbox i:nth-of-type(3), .line.short { width: 62%; }
+.arrow { position: relative; flex: 0 0 28px; height: 2px; background: #0c7c72; }
+.arrow::after {
+  content: ""; position: absolute; right: -1px; top: -4px;
+  border: 5px solid transparent; border-left: 7px solid #0c7c72;
+}
+.meters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(100%, 440px); }
+.meter {
+  min-height: 210px; padding: 18px 10px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 28px; text-align: center;
+}
+.meter strong { font-size: 16px; color: #07211f; }
+.dots { display: flex; gap: 6px; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; background: #d7e4ef; }
+.dots i.on { background: #0c7c72; }
+.stair {
+  width: 78px; height: 72px;
+  background:
+    linear-gradient(#9fd8d0, #9fd8d0) left bottom / 18px 28px no-repeat,
+    linear-gradient(#0c7c72, #0c7c72) center bottom / 18px 48px no-repeat,
+    linear-gradient(#d7e4ef, #d7e4ef) right bottom / 18px 64px no-repeat;
+}
+.dial {
+  width: 84px; height: 84px; border-radius: 50%;
+  background: conic-gradient(#0c7c72 0 110deg, #0a6f9c 110deg 230deg, #e36a32 230deg 360deg);
+  -webkit-mask: radial-gradient(circle 26px at center, transparent 98%, #000 100%);
+  mask: radial-gradient(circle 26px at center, transparent 98%, #000 100%);
+}
+.fan { position: relative; width: min(100%, 520px); height: 280px; }
+.fcard {
+  position: absolute; width: 148px; height: 196px; border-radius: 20px; color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 16px 28px rgba(7, 40, 50, 0.16);
+}
+.fcard svg { width: 48px; height: 48px; }
+.fcard b { font-size: 20px; }
+.fc1 { background: #0c7c72; left: 0; top: 46px; transform: rotate(-8deg); }
+.fc2 { background: #0a6f9c; left: 118px; top: 18px; transform: rotate(-2deg); }
+.fc3 { background: #e36a32; left: 236px; top: 40px; transform: rotate(5deg); }
+.fc4 { background: #073f3c; left: 354px; top: 14px; transform: rotate(9deg); }
+.src b, .doc b, .sheetlet b { display: block; margin-bottom: 4px; color: #52657c; font-size: 13px; }
+.gap { display: block; height: 42px; margin-top: 14px; border-radius: 12px; border: 1.5px dashed #b7c9d8; }
+.sheetlet { width: 132px; min-height: 168px; padding: 16px; }
+.devs { display: flex; align-items: flex-end; gap: 16px; }
+.monitor {
+  position: relative; width: 168px; height: 92px; margin-bottom: 18px;
+  border: 8px solid #073f3c; border-radius: 12px; background: #e7f6f3;
+}
+.monitor::after {
+  content: ""; position: absolute; left: 50%; bottom: -16px; width: 52px; height: 8px;
+  border-radius: 4px; background: #073f3c; transform: translateX(-50%);
+}
+.phone { width: 72px; height: 116px; border: 7px solid #0a6f9c; border-radius: 18px; background: #e7f3fb; }
+.feed { width: 168px; height: 74px; padding: 14px; }
+.feed i { display: block; height: 8px; margin-top: 8px; border-radius: 99px; background: #d7e4ef; }
+.feed i:first-child { width: 55%; margin-top: 0; background: #e36a32; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; color: #24364c; font-size: 13px; font-weight: 750; }
+.legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 3px; vertical-align: -1px; }
+.lg1 { background: #0c7c72; }
+.lg2 { background: #0a6f9c; }
+.lg3 { background: #e36a32; }
+.grid6 { width: min(100%, 560px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.pcell { min-height: 96px; padding: 12px; }
+.pcell b { display: block; color: #07211f; font-size: 14px; white-space: nowrap; }
+.marks { display: flex; align-items: flex-end; gap: 6px; height: 36px; margin-top: 12px; }
+.marks i { flex: 1; border-radius: 6px; }
+.marks i:nth-child(1) { background: #0c7c72; }
+.marks i:nth-child(2) { background: #0a6f9c; }
+.marks i:nth-child(3) { background: #e36a32; }
+.v1 i:nth-child(1) { height: 46%; } .v1 i:nth-child(2) { height: 78%; } .v1 i:nth-child(3) { height: 30%; }
+.v2 i:nth-child(1) { height: 70%; } .v2 i:nth-child(2) { height: 40%; } .v2 i:nth-child(3) { height: 58%; }
+.v3 i:nth-child(1) { height: 34%; } .v3 i:nth-child(2) { height: 62%; } .v3 i:nth-child(3) { height: 84%; }
+.v4 i:nth-child(1) { height: 80%; } .v4 i:nth-child(2) { height: 36%; } .v4 i:nth-child(3) { height: 52%; }
+.v5 i:nth-child(1) { height: 48%; } .v5 i:nth-child(2) { height: 86%; } .v5 i:nth-child(3) { height: 28%; }
+.v6 i:nth-child(1) { height: 62%; } .v6 i:nth-child(2) { height: 44%; } .v6 i:nth-child(3) { height: 74%; }
+.carousel-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.carousel-tools { display: flex; gap: 8px; }
+.carousel-tools button {
+  min-width: 44px; min-height: 44px; border-radius: 12px; border: 1px solid #e3ebf3;
+  background: #fff; cursor: pointer; font-weight: 800;
+}
+.carousel-count { color: #5b6b82; font-variant-numeric: tabular-nums; font-weight: 800; }
+.band {
+  margin-top: 72px; padding: 56px 0; color: #fff; background-color: #073f3c;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+.band .head h2, .step h3, .finale h2 { color: #fff; }
+.band .kicker { background: #0e5c52; color: #d8fff6; -webkit-text-fill-color: #d8fff6; }
+.loop { position: relative; display: flex; justify-content: space-between; gap: 12px; margin: 8px 0 0; padding: 0; list-style: none; }
+.loop::before {
+  content: ""; position: absolute; left: 7%; right: 7%; top: 42px; height: 3px; border-radius: 99px; background: #3d9a8b;
+}
+.step { position: relative; z-index: 1; text-align: center; background: transparent; border: 0; }
+.step .glyph { width: 84px; height: 84px; margin: 0 auto; border-radius: 28px; background: #fff; }
+.step .glyph svg { width: 34px; height: 34px; }
+.step h3 { margin-top: 12px; font-size: 1.05rem; }
+.samples { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.poster { position: relative; overflow: hidden; min-height: 248px; border-radius: 28px; }
+.desktop { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 32px; align-items: center; }
+.desktop-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.os-list { display: grid; gap: 10px; margin-top: 18px; }
+.os {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: min(100%, 420px); min-height: 60px; padding: 0 16px; border-radius: 14px; text-decoration: none;
+}
+.os b { color: #0c7c72; }
+button.os { cursor: not-allowed; background: #e7eef5; color: #6b7c90; }
+button.os b { color: #6b7c90; }
+.window { overflow: hidden; border-radius: 20px; box-shadow: 0 22px 48px rgba(15, 55, 95, 0.12); }
+.winbar {
+  display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 14px;
+  background: #f4f8fb; border-bottom: 1px solid #e3ebf3;
+}
+.winbar b { margin-left: 8px; color: #3d5168; font-size: 13px; }
+.winbody { display: grid; grid-template-columns: 64px minmax(0, 1fr); min-height: 280px; }
+.side { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px 0; background: #073f3c; }
+.side span { width: 28px; height: 28px; border-radius: 8px; background: #1d5c56; }
+.side span.on { background: #fff; }
+.mainpane { display: grid; align-content: start; gap: 12px; padding: 14px; }
+.bars {
+  display: flex; align-items: flex-end; gap: 8px; height: 128px; padding: 12px;
+  border-radius: 14px; background: #f4f8fb;
+}
+.bars b { flex: 1; border-radius: 7px 7px 3px 3px; }
+.bars b:nth-child(1) { height: 42%; background: #9fd8d0; }
+.bars b:nth-child(2) { height: 70%; background: #0a6f9c; }
+.bars b:nth-child(3) { height: 34%; background: #e36a32; }
+.bars b:nth-child(4) { height: 82%; background: #0c7c72; }
+.bars b:nth-child(5) { height: 52%; background: #073f3c; }
+.bars b:nth-child(6) { height: 64%; background: #7eb6d4; }
+.minis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.faq { display: grid; gap: 10px; }
+.faq-item { border-radius: 16px; padding: 0 18px; }
+.faq-question { display: flex; align-items: center; width: 100%; min-height: 58px; padding: 0; border: 0; background: transparent; cursor: pointer; color: #07211f; font: inherit; font-weight: 750; text-align: left; }
+.faq p { margin: 0 0 16px; color: #3d5168; line-height: 1.55; }
+.finale {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  margin: 48px auto 20px; padding: 32px 36px; border-radius: 28px; background: #06342f;
+}
+footer.wrap { padding: 8px 0 12px; color: #6b7c90; font-size: 13px; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+html.motion .rise { opacity: 0; transform: translateY(12px); }
+html.motion .rise.in { animation: rise .6s cubic-bezier(.2, 0, 0, 1) forwards; }
+@keyframes rise { to { opacity: 1; transform: none; } }
+button:focus-visible, a:focus-visible { outline: 2px solid #0c7c72; outline-offset: 2px; }
+@media (hover: hover) {
+  .piccard:hover { transform: translateY(-3px); box-shadow: 0 16px 30px rgba(15, 55, 95, 0.1); }
+}
+@media (max-width: 980px) {
+  .hero, .tour, .desktop { grid-template-columns: 1fr; }
+  .finale { flex-direction: column; align-items: flex-start; }
+  .tour-nav { flex-direction: row; overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+  .tour-nav::-webkit-scrollbar { display: none; }
+  .tour-nav button { width: auto; flex: 0 0 auto; }
+  .window { order: -1; }
+  .os { width: 100%; }
+}
+@media (max-width: 800px) {
+  .benefits { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  .top { flex-wrap: wrap; row-gap: 4px; }
+  .links { order: 3; flex: 1 0 100%; flex-wrap: nowrap; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .links::-webkit-scrollbar { display: none; }
+  .links a { flex: 0 0 auto; }
+  .block, .band { scroll-margin-top: 128px; }
+  .hero { padding: 28px 0 4px; gap: 20px; }
+  .block { padding: 44px 0 4px; }
+  .band { margin-top: 44px; padding: 36px 0; }
+  .scene-main, .samples { grid-template-columns: 1fr; }
+  .art.see, .art.write, .art.send { flex-direction: column; }
+  .art { min-height: 0; padding: 16px; }
+  .art .arrow { transform: rotate(90deg); }
+  .meters, .askbox, .src, .doc, .sheetlet { width: min(100%, 320px); }
+  .devs { flex-wrap: wrap; justify-content: center; }
+  .fan { height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fcard { position: static; width: auto; height: 128px; transform: none; }
+  .loop { flex-direction: column; align-items: flex-start; gap: 0; }
+  .loop::before { left: 34px; right: auto; top: 20px; bottom: 20px; width: 3px; height: auto; }
+  .step { display: flex; align-items: center; gap: 14px; padding: 8px 0; text-align: left; }
+  .step .glyph { width: 72px; height: 72px; margin: 0; }
+  .step h3 { margin: 0; }
+  .display { max-width: none; }
+}
+@media (max-width: 640px) {
+  .samples { grid-template-columns: 1fr; }
+  .finale { padding: 24px; }
+  .finale .btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .caret, .rise, .piccard, .poster { animation: none; transition: none; }
+  html.motion .rise { opacity: 1; transform: none; }
+  .piccard:hover { transform: none; }
+}
+</style>
+<link rel="stylesheet" href="studio-redesign.css" />
+<link rel="stylesheet" href="promo-pages.css" />
+</head>
+
+<body data-variant="motion" data-page="home">
+  <header class="top wrap" id="top">
+    <a class="brand" href="studio-motion.html">
+      <span class="mark" aria-hidden="true">DP</span>
+      <span class="brand-name"><strong>德沛GEO</strong><span>AI 搜索增长系统</span></span>
+    </a>
+    <nav class="links" aria-label="主导航">
+      <a href="studio-motion.html" aria-current="page">首页</a>
+      <a href="product-features.html">产品功能</a>
+      <a href="agent-recruitment.html">代理商招募</a>
+    </nav>
+    <div class="top-actions">
+      <a class="top-login" href="/login">登录</a>
+      <a class="btn btn-primary top-cta" href="/register">立即体验 <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <main>
+    <section class="hero wrap hero-carousel" data-hero-carousel aria-label="首页主题轮播" aria-roledescription="轮播图">
+      <article class="hero-slide is-active" data-hero-slide aria-label="第 1 张，共 3 张：品牌增长" aria-hidden="false">
+        <div class="hero-copy">
+          <p class="kicker"><span class="status-dot" aria-hidden="true"></span> GEO · 生成式搜索优化平台</p>
+          <h1 class="display"><span>让品牌在 AI 搜索中</span><span>被看见，也被选择</span></h1>
+          <p class="hero-lead">把品牌事实、产品优势与可信信息来源，转化为更清晰的答案资产；以诊断、内容建设和持续监测，让 GEO 优化围绕真实用户问题展开</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/register">开始诊断
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="product-features.html">了解产品能力</a>
+          </div>
+        </div>
+      </article>
+      <article class="hero-slide hero-slide--light hero-slide--insight" data-hero-slide aria-label="第 2 张，共 3 张：诊断洞察" aria-hidden="true" inert>
+        <div class="hero-copy">
+          <p class="kicker"><span class="status-dot" aria-hidden="true"></span> 品牌可见度诊断</p>
+          <h2 class="display"><span>看清品牌如何</span><span>出现在 AI 回答里</span></h2>
+          <p class="hero-lead">围绕真实用户问题，查看品牌提及、推荐位置与引用来源，把模糊的搜索表现变成清晰的优化线索</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/register">开始品牌诊断 <span aria-hidden="true">↗</span></a>
+            <a class="btn btn-ghost" href="product-features.html#capabilities">了解诊断能力</a>
+          </div>
+        </div>
+      </article>
+      <article class="hero-slide hero-slide--light hero-slide--content" data-hero-slide aria-label="第 3 张，共 3 张：内容建设" aria-hidden="true" inert>
+        <div class="hero-copy">
+          <p class="kicker"><span class="status-dot" aria-hidden="true"></span> 企业知识与内容资产</p>
+          <h2 class="display"><span>把品牌知识</span><span>写进用户的问题里</span></h2>
+          <p class="hero-lead">沉淀可信的品牌资料，从用户意图出发组织内容，再将内容资产与渠道任务衔接起来</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="product-features.html#capabilities">了解内容能力 <span aria-hidden="true">↗</span></a>
+            <a class="btn btn-ghost" href="/register">立即体验</a>
+          </div>
+        </div>
+      </article>
+      <div class="hero-carousel-dots" role="group" aria-label="首屏轮播切换">
+        <button class="is-active" type="button" data-hero-dot="0" aria-label="显示第 1 张：品牌增长" aria-current="true"><span aria-hidden="true"></span></button>
+        <button type="button" data-hero-dot="1" aria-label="显示第 2 张：诊断洞察"><span aria-hidden="true"></span></button>
+        <button type="button" data-hero-dot="2" aria-label="显示第 3 张：内容建设"><span aria-hidden="true"></span></button>
+      </div>
+    </section>
+
+    <section class="geo-intro wrap" id="intro" aria-labelledby="geo-intro-title">
+      <div class="geo-intro-copy rise">
+        <p class="section-eyebrow">认识 GEO</p>
+        <h2 id="geo-intro-title">搜索从链接列表，走向 AI 生成答案</h2>
+        <p class="geo-intro-lead">当用户直接向 AI 寻找建议，品牌需要关注的不只是搜索位置，更是回答如何理解和呈现自己</p>
+        <ol class="geo-focus">
+          <li><span>01</span><strong>被提及</strong><p>在相关问题中，让用户有机会看见品牌</p></li>
+          <li><span>02</span><strong>被理解</strong><p>让产品优势与品牌事实得到准确表达</p></li>
+          <li><span>03</span><strong>被推荐</strong><p>在合适的决策场景中建立推荐机会</p></li>
+        </ol>
+        <a class="geo-intro-link" href="product-features.html">了解德沛GEO 的工作方式 <span aria-hidden="true">↗</span></a>
+      </div>
+      <figure class="geo-visual rise">
+        <div class="geo-visual-image">
+          <img src="promo-geo-answer.webp" alt="用户问题与多份品牌资料汇聚成 AI 答案" width="1024" height="1024" decoding="async" />
+        </div>
+        <figcaption>
+          <div><strong>让可信信息进入 AI 答案</strong><span>从真实提问出发，观察品牌如何被呈现</span></div>
+          <span class="geo-visual-meta">提及 · 名次 · 评价</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="block wrap" id="value">
+      <div class="head rise"><p class="section-eyebrow">GEO 增长闭环</p><h2>覆盖 GEO 优化的关键环节</h2><p>以真实用户提问为起点，连接诊断、知识、内容、分发和监测，形成持续优化的工作闭环</p></div>
+      <div class="benefits">
+        <article class="piccard rise">
+          <div class="frame f-mint"><img src="promo-visibility.webp" alt="" width="768" height="768" loading="lazy" decoding="async" /></div>
+          <h3>洞察品牌可见度</h3><p>从目标问题出发，查看品牌在 AI 回答中的提及、名次与评价</p>
+        </article>
+        <article class="piccard rise">
+          <div class="frame f-blue"><img src="promo-knowledge.webp" alt="" width="768" height="768" loading="lazy" decoding="async" /></div>
+          <h3>沉淀品牌知识</h3><p>把品牌、产品与案例整理进企业知识库，形成可复用的事实基础</p>
+        </article>
+        <article class="piccard rise">
+          <div class="frame f-sand"><img src="promo-content-flow-20260925.webp" alt="" width="1024" height="1024" loading="lazy" decoding="async" /></div>
+          <h3>构建内容资产</h3><p>围绕搜索意图创作内容，让品牌信息更完整、更有依据</p>
+        </article>
+        <article class="piccard rise">
+          <div class="frame f-deep"><img src="promo-monitoring.webp" alt="" width="768" height="768" loading="lazy" decoding="async" /></div>
+          <h3>追踪优化表现</h3><p>分平台观察结果变化，为下一轮内容和策略调整提供依据</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="block wrap" id="features">
+      <div class="head rise"><p class="section-eyebrow">一站式 GEO 工作台</p><h2>从诊断到监测，构建完整工作流</h2><p>五项核心能力相互衔接，让品牌在 AI 搜索中的每一步优化都有清晰依据</p></div>
+      <div class="tour rise" data-carousel tabindex="0">
+        <div class="tour-nav" role="tablist" aria-label="能力">
+          <button type="button" data-dot aria-selected="true"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16s5-8 12-8 12 8 12 8-5 8-12 8S4 16 4 16z"/><circle cx="16" cy="16" r="3.2"/></svg></span>可见度诊断</button>
+          <button type="button" data-dot aria-selected="false" tabindex="-1"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h8a4 4 0 0 1 4 4v13H10a4 4 0 0 0-4 4V8z"/><path d="M26 8h-8a4 4 0 0 0-4 4v13h8a4 4 0 0 1 4 4V8z"/></svg></span>企业知识库</button>
+          <button type="button" data-dot aria-selected="false" tabindex="-1"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 7l7 7L12 27H5v-7L18 7z"/></svg></span>内容创作</button>
+          <button type="button" data-dot aria-selected="false" tabindex="-1"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16L27 6l-6 20-5-8-11-2z"/></svg></span>多渠道分发</button>
+          <button type="button" data-dot aria-selected="false" tabindex="-1"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20l7-7 4 4 11-11"/><path d="M20 6h7v7"/></svg></span>品牌监测</button>
+        </div>
+        <div>
+          <article class="slide is-on" data-slide>
+            <div class="slide-copy"><span>01 / 可见度诊断</span><h3>定位品牌在 AI 回答中的位置</h3><p>基于目标问题，分别查看各平台中的品牌提及、名次与评价，识别优化方向</p></div>
+            <div class="art product-art see" aria-hidden="true">
+              <div class="product-window">
+                <div class="product-window-head"><span class="product-window-dots"><i></i><i></i><i></i></span><strong>可见度诊断</strong><small>界面示意</small></div>
+                <div class="visibility-layout">
+                  <div class="visibility-platforms">
+                    <span class="mock-label">平台覆盖</span>
+                    <div class="platform-row"><b>豆包</b><i style="--bar: 78%"></i></div>
+                    <div class="platform-row"><b>DeepSeek</b><i style="--bar: 64%"></i></div>
+                    <div class="platform-row"><b>元宝</b><i style="--bar: 51%"></i></div>
+                    <div class="platform-row"><b>Kimi</b><i style="--bar: 43%"></i></div>
+                  </div>
+                  <div class="visibility-summary">
+                    <span class="mock-label">诊断维度</span>
+                    <strong>让每个问题都有依据</strong>
+                    <div class="summary-chips"><span>品牌提及</span><span>推荐位置</span><span>引用来源</span></div>
+                    <div class="summary-track"><i></i><i></i><i></i><i></i><i></i></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="slide" data-slide aria-hidden="true">
+            <div class="slide-copy"><span>02 / 企业知识库</span><h3>建设可复用的品牌知识资产</h3><p>集中维护品牌、产品、案例与问答等可信事实，为内容创作提供统一依据</p></div>
+            <div class="art product-art lib" aria-hidden="true">
+              <div class="product-window">
+                <div class="product-window-head"><span class="product-window-dots"><i></i><i></i><i></i></span><strong>企业知识库</strong><small>界面示意</small></div>
+                <div class="knowledge-layout">
+                  <div class="knowledge-sidebar"><span class="mock-label">知识分类</span><b class="is-current">品牌资料</b><b>产品信息</b><b>客户案例</b><b>常见问答</b></div>
+                  <div class="knowledge-main"><span class="mock-label">统一的品牌事实</span><strong>让内容创作有可靠依据</strong><div class="knowledge-cards"><span>品牌定位<i></i><i></i></span><span>产品优势<i></i><i></i></span><span>服务场景<i></i><i></i></span></div></div>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="slide" data-slide aria-hidden="true">
+            <div class="slide-copy"><span>03 / 内容创作</span><h3>围绕搜索意图创作优质内容</h3><p>以用户问题和企业知识为基础，组织更清晰、更完整的品牌内容</p></div>
+            <div class="art product-art write" aria-hidden="true">
+              <div class="product-window">
+                <div class="product-window-head"><span class="product-window-dots"><i></i><i></i><i></i></span><strong>内容创作</strong><small>界面示意</small></div>
+                <div class="content-layout"><div class="content-prompt"><span class="mock-label">真实用户问题</span><strong>如何选择适合自己的方案？</strong><span class="content-source">已关联品牌资料与产品知识</span></div><div class="content-draft"><span class="mock-label">内容草稿</span><strong>先回答问题，再说明依据</strong><i></i><i></i><i></i><div><span>问题导向</span><span>事实依据</span></div></div></div>
+              </div>
+            </div>
+          </article>
+          <article class="slide" data-slide aria-hidden="true">
+            <div class="slide-copy"><span>04 / 多渠道分发</span><h3>推动内容触达更多渠道</h3><p>集中管理内容分发任务和渠道进度，让内容从创作走向触达</p></div>
+            <div class="art product-art send" aria-hidden="true">
+              <div class="product-window">
+                <div class="product-window-head"><span class="product-window-dots"><i></i><i></i><i></i></span><strong>多渠道分发</strong><small>界面示意</small></div>
+                <div class="distribution-layout"><div class="distribution-asset"><span class="mock-label">内容资产</span><strong>一份完整的品牌内容</strong><i></i><i></i><i></i><span class="asset-tag">准备分发</span></div><div class="distribution-channels"><span class="mock-label">分发任务</span><div><b>官网内容</b><small>内容渠道</small></div><div><b>社交平台</b><small>内容渠道</small></div><div><b>行业媒体</b><small>内容渠道</small></div></div></div>
+              </div>
+            </div>
+          </article>
+          <article class="slide" data-slide aria-hidden="true">
+            <div class="slide-copy"><span>05 / 品牌监测</span><h3>看清多模型趋势与真实回答</h3><p>按批次观察各模型的提及趋势、排名与评价，并追溯回答内容及引用来源</p></div>
+            <div class="art product-art watch" aria-hidden="true">
+              <div class="product-window">
+                <div class="product-window-head"><span class="product-window-dots"><i></i><i></i><i></i></span><strong>品牌监测</strong><small>界面示意</small></div>
+                <div class="monitor-layout"><div class="monitor-trend"><span class="mock-label">模型趋势</span><div class="chart-legend"><span>● 豆包</span><span>● 千问</span><span>● Kimi</span></div><svg viewBox="0 0 420 152" preserveAspectRatio="none"><path class="chart-grid" d="M0 28H420M0 78H420M0 128H420"/><path class="chart-line chart-line-a" d="M0 112L55 88L110 94L165 58L220 67L275 44L330 59L420 27"/><path class="chart-line chart-line-b" d="M0 120L55 110L110 75L165 83L220 47L275 63L330 31L420 42"/><path class="chart-line chart-line-c" d="M0 127L55 120L110 113L165 119L220 98L275 85L330 92L420 70"/></svg></div><div class="monitor-details"><div><span class="mock-label">回答分析</span><strong>排名表现 <i>→</i> 高位机会 <i>→</i> 回答评价</strong></div><div><span class="mock-label">答案浏览</span><strong>查看回答原文</strong><p>关联引用来源，回看推荐依据</p></div></div></div>
+              </div>
+            </div>
+          </article>
+          <div class="carousel-bar">
+            <div class="carousel-tools">
+              <button type="button" data-prev aria-label="上一项">←</button>
+              <button type="button" data-next aria-label="下一项">→</button>
+            </div>
+            <span class="carousel-count" data-count>01 / 05</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="loop">
+      <div class="wrap">
+        <div class="head rise"><p class="section-eyebrow">持续优化路径</p><h2>让每一步，都成为下一步的依据</h2><p>从发现品牌可见度问题，到建立知识基础、创作与分发内容，再以跨平台监测结果驱动优化</p></div>
+        <ol class="loop">
+          <li class="step rise"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16s5-8 12-8 12 8 12 8-5 8-12 8S4 16 4 16z"/><circle cx="16" cy="16" r="3.2"/></svg></span><h3>诊断</h3><p>识别可见度现状</p></li>
+          <li class="step rise"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h8a4 4 0 0 1 4 4v13H10a4 4 0 0 0-4 4V8z"/><path d="M26 8h-8a4 4 0 0 0-4 4v13h8a4 4 0 0 1 4 4V8z"/></svg></span><h3>知识库</h3><p>统一品牌事实</p></li>
+          <li class="step rise"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 7l7 7L12 27H5v-7L18 7z"/></svg></span><h3>创作</h3><p>构建内容资产</p></li>
+          <li class="step rise"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16L27 6l-6 20-5-8-11-2z"/></svg></span><h3>分发</h3><p>推进渠道触达</p></li>
+          <li class="step rise"><span class="glyph"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20l7-7 4 4 11-11"/><path d="M20 6h7v7"/></svg></span><h3>监测</h3><p>评估优化表现</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="block wrap" id="cases">
+      <div class="head rise">
+        <p class="section-eyebrow">典型搜索场景</p><h2>用户向 AI 提问时，你的品牌是否在场？</h2>
+        <p>覆盖本地服务、教育培训、企业服务与消费品等常见决策场景</p>
+      </div>
+      <div class="samples">
+        <article class="poster home rise">
+          <div class="scenario-top"><span class="scenario-number">01</span><span class="scenario-kind">本地服务</span><span class="scenario-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 15 12-10 12 10v12H4V15Z"/><path d="M12 27v-9h8v9"/></svg></span></div>
+          <div class="scenario-layout"><div class="scenario-copy"><span class="scenario-label">用户可能会问</span><h3>附近哪家装修公司<br>更可靠？</h3><p>让服务范围、项目案例与客户评价更容易被理解</p></div><div class="scenario-info"><span>品牌可准备的信息</span><ul><li>服务区域</li><li>真实案例</li><li>客户评价</li></ul></div></div>
+        </article>
+        <article class="poster edu rise">
+          <div class="scenario-top"><span class="scenario-number">02</span><span class="scenario-kind">教育培训</span><span class="scenario-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 12 13-6 13 6-13 6L3 12Z"/><path d="M8 15v7c4 3 12 3 16 0v-7M29 12v9"/></svg></span></div>
+          <div class="scenario-layout"><div class="scenario-copy"><span class="scenario-label">用户可能会问</span><h3>哪家培训机构<br>口碑更好？</h3><p>让课程、师资和学员反馈形成清晰的判断依据</p></div><div class="scenario-info"><span>品牌可准备的信息</span><ul><li>课程设置</li><li>师资经验</li><li>学员反馈</li></ul></div></div>
+        </article>
+        <article class="poster team rise">
+          <div class="scenario-top"><span class="scenario-number">03</span><span class="scenario-kind">企业服务</span><span class="scenario-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="10" r="3"/><circle cx="24" cy="10" r="3"/><circle cx="16" cy="23" r="3"/><path d="m11 12 4 8m6-8-4 8"/></svg></span></div>
+          <div class="scenario-layout"><div class="scenario-copy"><span class="scenario-label">用户可能会问</span><h3>小团队适合哪种<br>协作工具？</h3><p>把适用团队、核心功能和服务方式说清楚</p></div><div class="scenario-info"><span>品牌可准备的信息</span><ul><li>适用团队</li><li>核心功能</li><li>服务方式</li></ul></div></div>
+        </article>
+        <article class="poster shop rise">
+          <div class="scenario-top"><span class="scenario-number">04</span><span class="scenario-kind">消费品</span><span class="scenario-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11h16l-1 16H9L8 11ZM12 11V8a4 4 0 0 1 8 0v3"/><path d="M13 18h6"/></svg></span></div>
+          <div class="scenario-layout"><div class="scenario-copy"><span class="scenario-label">用户可能会问</span><h3>这一品类，哪一个<br>更值得买？</h3><p>让产品特点、适用人群和选购依据更清晰</p></div><div class="scenario-info"><span>品牌可准备的信息</span><ul><li>产品特点</li><li>适用人群</li><li>选购依据</li></ul></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="block wrap" id="desktop">
+      <div class="desktop rise">
+        <div class="desktop-copy">
+          <p class="kicker">桌面端</p>
+          <h2>一个工作台，<br>连接查看与执行</h2>
+          <p class="sub">通过网页查看诊断与监测结果，按需在 Windows 桌面端继续操作</p>
+          <div class="desktop-actions">
+            <a class="btn btn-primary" href="geohao://open">打开桌面端
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+          <p class="note">Windows 可在工作台下载，macOS 与 Linux 暂未提供</p>
+          <div class="os-list">
+            <a class="os" href="/login"><span><strong>Windows</strong></span><b>前往下载</b></a>
+            <button class="os" type="button" disabled><span><strong>macOS</strong></span><b>暂未提供</b></button>
+            <button class="os" type="button" disabled><span><strong>Linux</strong></span><b>暂未提供</b></button>
+          </div>
+        </div>
+        <div class="window" aria-hidden="true">
+          <div class="winbar"><i></i><i></i><i></i><b>德沛GEO</b></div>
+          <div class="winbody">
+            <div class="side"><span class="on"></span><span></span><span></span><span></span></div>
+            <div class="mainpane">
+              <div class="bars"><b></b><b></b><b></b><b></b><b></b><b></b></div>
+              <div class="minis"><i>豆包</i><i>千问</i><i>Kimi</i><i>DeepSeek</i><i>文心一言</i><i>ChatGPT</i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block wrap" id="faq">
+      <div class="head rise"><h2>常见问答</h2></div>
+      <div class="faq">
+        <div class="faq-item rise">
+          <button class="faq-question" type="button" id="faq-question-1" aria-expanded="false" aria-controls="faq-answer-1">我应该从哪里开始？</button>
+          <div class="faq-answer" id="faq-answer-1" aria-hidden="true"><div class="faq-answer-inner"><p>先选择一个目标用户会问的问题，查看品牌在不同 AI 平台中的提及、名次和评价，再确定知识与内容的优化方向</p></div></div>
+        </div>
+        <div class="faq-item rise">
+          <button class="faq-question" type="button" id="faq-question-2" aria-expanded="false" aria-controls="faq-answer-2">如何判断品牌是否被 AI 看见？</button>
+          <div class="faq-answer" id="faq-answer-2" aria-hidden="true"><div class="faq-answer-inner"><p>按目标问题和平台查看品牌提及、答案中的名次与评价，再对比不同时间的变化</p></div></div>
+        </div>
+        <div class="faq-item rise">
+          <button class="faq-question" type="button" id="faq-question-3" aria-expanded="false" aria-controls="faq-answer-3">不同 AI 平台的结果会混在一起吗？</button>
+          <div class="faq-answer" id="faq-answer-3" aria-hidden="true"><div class="faq-answer-inner"><p>不会，平台结果分别记录，方便你看清每个平台中的品牌表现与变化</p></div></div>
+        </div>
+        <div class="faq-item rise">
+          <button class="faq-question" type="button" id="faq-question-4" aria-expanded="false" aria-controls="faq-answer-4">网页和桌面端分别用来做什么？</button>
+          <div class="faq-answer" id="faq-answer-4" aria-hidden="true"><div class="faq-answer-inner"><p>网页可查看业务结果和工作台，需要使用桌面端能力时，可在 Windows 下载客户端并继续操作</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="finale wrap" id="enter">
+      <div><p class="section-eyebrow">即刻开启</p><h2>从一次品牌诊断，<br>开启 GEO 增长</h2><p>选择一个真实的用户问题，了解品牌在 AI 回答中的表现</p></div>
+      <a class="btn btn-light" href="/register">立即开始诊断
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="site-footer-inner wrap">
+      <div class="site-footer-grid">
+        <div class="site-footer-brand">
+          <div class="site-footer-logo"><span class="site-footer-mark" aria-hidden="true">DP</span><strong>德沛GEO</strong></div>
+          <p>深圳德沛开源数据科技有限公司</p>
+          <p>用 GEO 重构品牌增长逻辑</p>
+        </div>
+        <nav class="site-footer-nav" aria-label="页脚导航">
+          <h2>导航</h2>
+          <a href="studio-motion.html">首页</a>
+          <a href="product-features.html">产品功能</a>
+          <a href="agent-recruitment.html">代理商招募</a>
+          <a href="#faq">常见问题</a>
+          <a href="/login">登录系统</a>
+          <a class="site-footer-register" href="/register">注册体验 ↗</a>
+        </nav>
+        <div class="site-footer-contact">
+          <h2>联系我们</h2>
+          <dl>
+            <div><dt>办公地址</dt><dd>深圳市宝安区新安街道海旺社区兴业路1100号金利通金融中心大厦2栋4302</dd></div>
+            <div class="site-footer-phones">
+              <div><dt>客服电话</dt><dd><a href="tel:15692096568">156 9209 6568</a></dd></div>
+              <div><dt>座机</dt><dd><a href="tel:075527337894">0755-27337894</a></dd></div>
+            </div>
+          </dl>
+        </div>
+        <div class="site-footer-qr">
+          <h2>企业微信</h2>
+          <img src="geo-report-qr.png" alt="企业微信二维码，扫码联系德沛团队" width="160" height="160" loading="lazy" />
+        </div>
+      </div>
+      <div class="site-footer-legal">
+        <p>© 2025–2026 深圳德沛开源数据科技有限公司</p>
+        <p><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer">粤ICP备2025473821号-6</a></p>
+        <p><a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030002014945" target="_blank" rel="noopener noreferrer">粤公网安备44030002014945号</a></p>
+        <p>增值电信业务经营许可证：粤B2-20261342</p>
+      </div>
+    </div>
+    <a class="site-footer-top" href="#top" aria-label="返回页面顶部">TOP</a>
+  </footer>
+
+  <script>
+    (function () {
+      if (window.location.protocol === "file:") {
+        document.querySelectorAll('a[href^="/"]').forEach(function (link) {
+          link.href = "http://localhost:5173" + link.getAttribute("href");
+        });
+      }
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduce) document.documentElement.classList.add("motion");
+      var nodes = document.querySelectorAll(".rise");
+      if (!("IntersectionObserver" in window)) {
+        nodes.forEach(function (node) { node.classList.add("in"); });
+        return;
+      }
+      var watcher = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("in");
+          watcher.unobserve(entry.target);
+        });
+      }, { threshold: 0.08 });
+      nodes.forEach(function (node) { watcher.observe(node); });
+    })();
+  </script>
+  <script>
+    (function () {
+      var hero = document.querySelector("[data-hero-carousel]");
+      if (!hero) return;
+      var slides = Array.prototype.slice.call(hero.querySelectorAll("[data-hero-slide]"));
+      var dots = Array.prototype.slice.call(hero.querySelectorAll("[data-hero-dot]"));
+      var activeIndex = 0;
+      var visible = true;
+      var touchStart = null;
+      var timer;
+
+      function canPlay() {
+        return visible && !document.hidden && !hero.contains(document.activeElement);
+      }
+      function schedule() {
+        window.clearTimeout(timer);
+        if (!canPlay()) return;
+        timer = window.setTimeout(function () { show(activeIndex + 1); }, 7000);
+      }
+      function show(nextIndex) {
+        activeIndex = (nextIndex + slides.length) % slides.length;
+        slides.forEach(function (slide, index) {
+          var selected = index === activeIndex;
+          slide.classList.toggle("is-active", selected);
+          slide.setAttribute("aria-hidden", selected ? "false" : "true");
+          slide.inert = !selected;
+        });
+        dots.forEach(function (dot, index) {
+          var selected = index === activeIndex;
+          dot.classList.toggle("is-active", selected);
+          if (selected) dot.setAttribute("aria-current", "true");
+          else dot.removeAttribute("aria-current");
+        });
+        schedule();
+      }
+
+      dots.forEach(function (dot, index) {
+        dot.addEventListener("click", function (event) {
+          if (event.detail > 0) dot.blur();
+          show(index);
+        });
+      });
+      hero.addEventListener("pointerdown", function (event) {
+        if (event.pointerType !== "touch" || event.target.closest("a, button")) return;
+        touchStart = { x: event.clientX, y: event.clientY };
+      });
+      hero.addEventListener("pointerup", function (event) {
+        if (event.pointerType !== "touch" || !touchStart) return;
+        var distanceX = event.clientX - touchStart.x;
+        var distanceY = event.clientY - touchStart.y;
+        touchStart = null;
+        if (Math.abs(distanceX) > 55 && Math.abs(distanceX) > Math.abs(distanceY) * 1.4) {
+          show(activeIndex + (distanceX < 0 ? 1 : -1));
+        }
+      });
+      hero.addEventListener("pointercancel", function () { touchStart = null; });
+      hero.addEventListener("focusin", schedule);
+      hero.addEventListener("focusout", function () { window.setTimeout(schedule, 0); });
+      document.addEventListener("visibilitychange", schedule);
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (entries) {
+          visible = entries[0].isIntersecting;
+          schedule();
+        }, { threshold: .2 }).observe(hero);
+      }
+      show(0);
+    })();
+  </script>
+  <script>
+    (function () {
+      var root = document.querySelector("[data-carousel]");
+      if (!root) return;
+      var slides = Array.prototype.slice.call(root.querySelectorAll("[data-slide]"));
+      var dots = Array.prototype.slice.call(root.querySelectorAll("[data-dot]"));
+      var count = root.querySelector("[data-count]");
+      var prev = root.querySelector("[data-prev]");
+      var next = root.querySelector("[data-next]");
+      var index = 0;
+      slides.forEach(function (slide, i) {
+        slide.id = "feature-panel-" + i;
+        slide.setAttribute("role", "tabpanel");
+        slide.setAttribute("aria-labelledby", "feature-tab-" + i);
+      });
+      dots.forEach(function (dot, i) {
+        dot.id = "feature-tab-" + i;
+        dot.setAttribute("role", "tab");
+        dot.setAttribute("aria-controls", "feature-panel-" + i);
+      });
+      function show(nextIndex) {
+        if (!slides.length) return;
+        index = (nextIndex + slides.length) % slides.length;
+        slides.forEach(function (slide, i) {
+          var on = i === index;
+          slide.classList.toggle("is-on", on);
+          slide.setAttribute("aria-hidden", on ? "false" : "true");
+        });
+        dots.forEach(function (dot, i) {
+          var on = i === index;
+          dot.setAttribute("aria-selected", on ? "true" : "false");
+          dot.tabIndex = on ? 0 : -1;
+        });
+        if (count) count.textContent = String(index + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+      }
+      if (prev) prev.addEventListener("click", function () { show(index - 1); });
+      if (next) next.addEventListener("click", function () { show(index + 1); });
+      dots.forEach(function (dot, i) {
+        dot.addEventListener("click", function () { show(i); });
+      });
+      root.addEventListener("keydown", function (event) {
+        if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+        event.preventDefault();
+        show(event.key === "ArrowRight" ? index + 1 : index - 1);
+      });
+      show(0);
+    })();
+  </script>
+  <script>
+    document.querySelectorAll(".faq-item").forEach(function (item) {
+      var question = item.querySelector(".faq-question");
+      var answer = item.querySelector(".faq-answer");
+      var pointerType = "";
+      function setOpen(open) {
+        item.classList.toggle("is-open", open);
+        question.setAttribute("aria-expanded", open ? "true" : "false");
+        answer.setAttribute("aria-hidden", open ? "false" : "true");
+      }
+      item.addEventListener("pointerenter", function (event) {
+        if (event.pointerType === "mouse") setOpen(true);
+      });
+      item.addEventListener("pointerleave", function (event) {
+        if (event.pointerType === "mouse") setOpen(false);
+      });
+      question.addEventListener("pointerdown", function (event) {
+        pointerType = event.pointerType;
+      });
+      question.addEventListener("click", function (event) {
+        if (pointerType !== "mouse" || event.detail === 0) setOpen(!item.classList.contains("is-open"));
+        pointerType = "";
+      });
+    });
+  </script>
+</body>
+</html>
